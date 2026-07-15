@@ -1,8 +1,11 @@
+
+
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import FloatingIndicator from "./FloatingIndicator";
 
 type NavItem = {
   key: string;
@@ -21,71 +24,64 @@ export default function NavLinks({
   const containerRef = useRef<HTMLUListElement>(null);
   const indicatorRef = useRef<HTMLSpanElement>(null);
 
-  const [hovered, setHovered] = useState(activeSection);
+  const [current, setCurrent] = useState(activeSection);
 
   useEffect(() => {
-    setHovered(activeSection);
+    setCurrent(activeSection);
   }, [activeSection]);
 
-  useEffect(() => {
+  const moveIndicator = (key: string) => {
     if (!containerRef.current || !indicatorRef.current) return;
 
-    const activeLink = containerRef.current.querySelector(
-      `[data-key="${hovered}"]`
+    const target = containerRef.current.querySelector(
+      `[data-key="${key}"]`
     ) as HTMLElement | null;
 
-    if (!activeLink) return;
+    if (!target) return;
 
     gsap.to(indicatorRef.current, {
-      x: activeLink.offsetLeft,
-      width: activeLink.offsetWidth,
+      x: target.offsetLeft,
+      width: target.offsetWidth,
+      height: target.offsetHeight,
       duration: 0.45,
       ease: "power3.out",
     });
-  }, [hovered]);
+  };
+
+  useLayoutEffect(() => {
+    moveIndicator(current);
+  }, []);
+
+  useEffect(() => {
+    moveIndicator(current);
+  }, [current]);
 
   return (
     <ul
       ref={containerRef}
-      className="relative hidden items-center rounded-full md:flex"
-      onMouseLeave={() => setHovered(activeSection)}
+      className="relative flex items-center gap-1"
+      onMouseLeave={() => setCurrent(activeSection)}
     >
-      {/* Sliding Glass Pill */}
-      {/* <span
-        ref={indicatorRef}
-        className="absolute left-0 top-1/2 -translate-y-1/2 h-11 rounded-full border border-white/10 bg-white/10 backdrop-blur-xl"
-      /> */}
-      <span
-        ref={indicatorRef}
-        className="
-        absolute
-        left-0
-        top-1/2
-        h-11
-        -translate-y-1/2
-        rounded-full
-        border
-        border-white/10
-        bg-white/8
-        backdrop-blur-xl
-        shadow-[0_8px_30px_rgba(0,0,0,0.25)]
-        "
-        />
+      <FloatingIndicator ref={indicatorRef} />
 
       {links.map((link) => (
         <li
           key={link.key}
           data-key={link.key}
-          onMouseEnter={() => setHovered(link.key)}
           className="relative z-10"
+          onMouseEnter={() => setCurrent(link.key)}
         >
           <Link
             href={`#${link.key}`}
-            className={`block px-6 py-3 text-sm font-medium transition-colors duration-300 ${
-              hovered === link.key
-                ? "text-white"
-                : "text-white/65 hover:text-white"
-            }`}
+            className={`
+              block rounded-full px-6 py-3 text-sm font-medium
+              transition-colors duration-300 
+              ${
+                current === link.key
+                  ? "text-white"
+                  : "text-white/60 hover:text-white"
+              }
+            `}
           >
             {link.label}
           </Link>
@@ -94,3 +90,4 @@ export default function NavLinks({
     </ul>
   );
 }
+

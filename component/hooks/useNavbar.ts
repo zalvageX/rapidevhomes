@@ -1,74 +1,120 @@
+
+
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-const SECTION_IDS = [
-  "home",
-  "about",
-  "services",
-  "portfolio",
-  "contact",
-];
+type ScrollDirection = "up" | "down";
 
 export function useNavbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState("home");
   const [openNavigation, setOpenNavigation] = useState(false);
-  const [scrollDirection, setScrollDirection] = useState<"up" | "down">("up");
+  const [activeSection, setActiveSection] = useState("home");
+  const [scrollDirection, setScrollDirection] =
+    useState<ScrollDirection>("up");
 
-  useEffect(() => {
-    let lastScrollY = window.scrollY;
+  const [scrolled, setScrolled] = useState(false);
 
-    const onScroll = () => {
-      const currentScrollY = window.scrollY;
+  const lastScroll = useRef(0);
+  const ticking = useRef(false);
 
-      setScrolled(currentScrollY > 80);
+  const sections = [
+    "home",
+    "about",
+    "services",
+    "portfolio",
+    "contact",
+  ];
 
-      setScrollDirection(
-        currentScrollY > lastScrollY ? "down" : "up"
-      );
+  const updateNavbar = useCallback(() => {
+    const y = window.scrollY;
 
-      lastScrollY = currentScrollY;
+    setScrolled(y > 60);
 
-      let current = "home";
+    if (y > lastScroll.current + 5) {
+      setScrollDirection("down");
+    } else if (y < lastScroll.current - 5) {
+      setScrollDirection("up");
+    }
 
-      SECTION_IDS.forEach((id) => {
-        const section = document.getElementById(id);
+    lastScroll.current = y;
 
-        if (!section) return;
+    let current = "home";
 
-        const rect = section.getBoundingClientRect();
+    for (const id of sections) {
+      const section = document.getElementById(id);
 
-        if (rect.top <= 140 && rect.bottom >= 140) {
-          current = id;
-        }
-      });
+      if (!section) continue;
 
-      setActiveSection(current);
-    };
+      const rect = section.getBoundingClientRect();
 
-    onScroll();
+      if (rect.top <= 120 && rect.bottom >= 120) {
+        current = id;
+        break;
+      }
+    }
 
-    window.addEventListener("scroll", onScroll);
+    setActiveSection(current);
 
-    return () => window.removeEventListener("scroll", onScroll);
+    ticking.current = false;
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = openNavigation
-      ? "hidden"
-      : "";
+    const handleScroll = () => {
+      if (!ticking.current) {
+        requestAnimationFrame(updateNavbar);
+        ticking.current = true;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    updateNavbar();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [updateNavbar]);
+
+  useEffect(() => {
+    document.body.style.overflow = openNavigation ? "hidden" : "";
 
     return () => {
       document.body.style.overflow = "";
     };
   }, [openNavigation]);
 
+  useEffect(() => {
+    const resize = () => {
+      if (window.innerWidth >= 1024) {
+        setOpenNavigation(false);
+      }
+    };
+
+    window.addEventListener("resize", resize);
+
+    return () => window.removeEventListener("resize", resize);
+  }, []);
+
+  useEffect(() => {
+    const escape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpenNavigation(false);
+      }
+    };
+
+    window.addEventListener("keydown", escape);
+
+    return () => window.removeEventListener("keydown", escape);
+  }, []);
+
   return {
     scrolled,
     activeSection,
+    scrollDirection,
     openNavigation,
     setOpenNavigation,
-    scrollDirection,
   };
 }
+

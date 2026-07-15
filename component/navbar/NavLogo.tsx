@@ -11,7 +11,7 @@ export default function NavLogo() {
       <div className="flex items-center text-2xl font-semibold tracking-[0.18em] uppercase">
 
         <span className="text-white transition-all duration-500 group-hover:tracking-[0.22em]">
-          RAPID
+          RAPI
         </span>
 
         <span className="relative flex h-3 w-3 items-center justify-center">
@@ -27,7 +27,7 @@ export default function NavLogo() {
         </span>
 
         <span className="text-white transition-all duration-500 group-hover:tracking-[0.22em]">
-          EV
+          DEV
         </span>
 
       </div>
