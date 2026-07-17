@@ -34,15 +34,13 @@ export default function RootLayout({
       lang="en"
       className={`${montserrat.variable} ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body>
-        {/* Navbar fixed at top */}
+      <body className="min-h-screen overflow-x-hidden bg-[#0A0A0A] text-[#ededed]">
         <Navbar />
 
-        <main className="relative overflow-hidden">
+        <main className="relative w-full overflow-hidden">
           {children}
         </main>
 
-        {/* Footer fixed at bottom */}
         <Footer />
       </body>
     </html>

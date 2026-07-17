@@ -59,7 +59,7 @@ export default function NavLinks({
   return (
     <ul
       ref={containerRef}
-      className="relative flex items-center gap-1"
+      className="relative flex items-center gap-2 md:gap-6"
       onMouseLeave={() => setCurrent(activeSection)}
     >
       <FloatingIndicator ref={indicatorRef} />
@@ -74,8 +74,7 @@ export default function NavLinks({
           <Link
             href={`#${link.key}`}
             className={`
-              block rounded-full px-6 py-3 text-sm font-medium
-              transition-colors duration-300 
+              block rounded-full px-4 py-3 text-sm font-medium transition-colors duration-300 md:px-6
               ${
                 current === link.key
                   ? "text-white"

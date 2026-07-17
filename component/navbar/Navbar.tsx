@@ -222,7 +222,7 @@ export default function Navbar () {
         fixed
         left-1/2
         top-0
-        z-[100]
+        z-100
         flex
         w-full
         -translate-x-1/2
@@ -242,8 +242,12 @@ export default function Navbar () {
           max-w-7xl
           items-center
           justify-between
+          gap-4
           px-6
-          lg:px-8
+          py-3
+          sm:px-8
+          lg:px-10
+          lg:py-4
           "
         >
           {/* Logo */}

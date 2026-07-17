@@ -81,15 +81,15 @@ export default function MobileMenu({
 
       <div className="absolute inset-0 bg-black/75 backdrop-blur-2xl" />
 
-      {/* Background image */}
+      {/* Background gradient */}
 
-      <div className="absolute inset-0 bg-[url('/dropdown.png')] bg-cover bg-center opacity-20" />
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-black/90 to-red-950/60" />
 
       {/* Content */}
 
-      <div className="relative flex h-full flex-col items-center justify-center">
+      <div className="relative flex h-full flex-col items-center justify-center px-6 py-8 sm:px-8">
 
-        <div className="space-y-8">
+        <div className="space-y-8 sm:space-y-10">
 
           {links.map((link) => (
             <Link
